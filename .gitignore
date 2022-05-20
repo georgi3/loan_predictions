@@ -1,0 +1,8 @@
+**.idea
+**.DS_Store
+**.csv
+data/
+**__pycache__/
+__pycache__/
+.env
+**.sav
