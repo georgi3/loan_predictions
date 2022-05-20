@@ -15,14 +15,25 @@ with open(model_fname, 'rb') as f:
 
 
 class Predict(Resource):
+
     def get(self):
-        return 'Alright then'
+        return 'Alright then, send the data to predict!'
 
     def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('predict_proba', type=str, location='args', default=False)
+        args = parser.parse_args()
+
         json_data = request.get_json()
-        df = pd.DataFrame(json_data.values(), index=json_data.keys()).transpose()
-        y_probas = loaded_model.predict_proba(df).tolist()
-        return y_probas
+        df = pd.read_json(json_data)
+        df.fillna(value=np.nan, inplace=True)
+
+        if args.get('predict_proba', False):
+            y_probas = loaded_model.predict_proba(df).tolist()
+            return y_probas
+
+        y_pred = loaded_model.predict(df).tolist()
+        return y_pred
 
 
 api.add_resource(Predict, '/')
